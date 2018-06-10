@@ -1,0 +1,761 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<title>公共舱单平台 - 舱单编辑</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="stylesheet" href="/wzyy/css/bootstrap.min.css">
+	<link rel="stylesheet" media="screen" href="/wzyy/css/jquery.alerts.min.css">
+	
+	<link rel="stylesheet" href="/wzyy/css/main.css">
+	<style type="text/css">
+		table * .text-control {width: 100%;border:0px;outline:none;}
+		.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{padding:5px;}
+		.must-input{color:#F00;font-weight:600;font-size:17px;margin:0;}
+		.grumble{z-index:1001;}
+		.grumble-text{z-index:1001;}
+	</style>
+	
+	<!--[if lte IE 9]>
+	<script src="/wzyy/js/respond.min.js"></script>
+	<script src="/wzyy/js/html5.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<div class="container" style="width:100%;">
+	<div class="row">
+		<div class="col-sm-12 col-md-12 col-lg-12">
+		<form role="form" id="manifestForm" action="" method="POST">
+			<!-- <input type="hidden" name="headBlId" value=""/> -->
+			
+			<table class="table table-bordered" style="margin-bottom:10px;" id="datatable" border="1px" >
+			<tr><th class="success" style="text-align:center;" colspan="13" width="100%">预配舱单 (SN Form)&nbsp;&nbsp;<a href="/wzyy" class="btn btn-sm btn-primary" style="font-size:14px;padding:2px 10px;width:90px;color:#fff;">新输一票</a>&nbsp;&nbsp;<a href="" target="blank" style="color:#F00;font-weight:bold;text-decoration:underline;">格式及填写规则说明</a></th></tr>
+			<!-- </table> -->
+			<tr><td colspan="13" width="100%" class="noExl">注：标 <label class="must-input">*</label> 的为必填项<label style="padding-left:20px;font-weight:600;color:#2618B6;">在使用过程中，若有疑问，请联系一代。</label></td></tr>
+			<!-- <table class="table table-bordered"> -->
+				<!-- <tbody> -->
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">船名 <label class="must-input">*</label></td>
+						<td colspan="3" class="col-sm-3 col-md-3 col-lg-3"><input id="vesselName" name="vesselName" class="text-control" maxlength="50" value="" /></td>
+						<td class="info col-sm-1 col-md-1 col-lg-1">航次 <label class="must-input">*</label></td>
+						<td colspan="3" class="col-sm-3 col-md-3 col-lg-3"><input id="voyageNo" name="voyageNo" class="text-control"  maxlength="20" value=""/></td>
+						<td class="info col-sm-1 col-md-1 col-lg-1">目的港 <label class="must-input">*</label></td>
+						<td colspan="4" class="col-sm-3 col-md-3 col-lg-3"><input id="destPortName" name="destPortName" class="text-control" maxlength="50" value=""/></td>
+					</tr>
+					<tr>
+						<td colspan="1" class="info col-sm-1 col-md-1 col-lg-1">总提单号 <label class="must-input">*</label></td>
+						<td colspan="3" class="col-sm-3 col-md-3 col-lg-3"><input id="headBlNo" name="headBlNo" class="text-control" maxlength="20" value=""/></td>
+						<td colspan="1" class="info col-sm-1 col-md-1 col-lg-1">编号</td>
+						<td colspan="8" class="col-sm-7 col-md-7 col-lg-7"><input id="consNo" name="consNo" class="text-control" maxlength="20" value=""/></td>
+					</tr>
+				<!-- </tbody> -->
+			<!-- </table> -->
+			<!-- <table style="margin-bottom:0;" class="table table-bordered"> -->
+				<tbody id="cargoList">
+					<th colspan="13" class="info noExl" style="text-align:center;">明细品名及数据&nbsp;&nbsp;
+						<button type="button" class="btn btn-sm btn-primary" style="font-size:14px;" onclick="addCargo()">新&nbsp;&nbsp;增</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<button type="button" class="btn btn-sm btn-default" style="font-size:14px;" onclick="copyBl()">复&nbsp;&nbsp;制</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<button type="button" class="btn btn-sm btn-default" style="font-size:14px;" onclick="deleteCargo()">删&nbsp;&nbsp;行</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<button type="button" class="btn btn-sm btn-default" style="font-size:14px;" onclick="clearCargos()">清&nbsp;&nbsp;空</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<button type="button" class="btn btn-sm btn-danger" style="font-size:14px;" onclick="toBatchPaste()" id="batchPasteBtn">批量粘贴</button>
+					</th>
+					<tr>
+						<td class="info" style="width:165px;">报关分提单号<label class="must-input">*</label></td>
+						<td class="info" style="width:115px;">箱号<label class="must-input">*</label></td>
+						<td class="info" style="width:90px;">封号<label class="must-input">*</label></td>
+						<td class="info" style="width:75px;">箱型<label class="must-input">*</label></td>
+						<td class="info" style="min-width:40px;">英文品名<label class="must-input">*</label></td>
+						<td class="info" style="width:103px;">HSCode<label class="must-input">*</label>(10位)</td>
+						<td class="info" style="width:60px;">件数<label class="must-input">*</label></td>
+						<td class="info" style="width:75px;">包装单位<label class="must-input">*</label></td>
+						<td class="info" style="width:50px;">毛重<label class="must-input">*</label>(KGS)</td>
+						<td class="info" style="width:75px;">体积<label class="must-input">*</label>(CBM)</td>
+						<td class="info">唛头</td>
+						<td class="info" style="width:75px;">UN Code(危)</td>
+						<td class="info" style="width:70px;">类别(危)</td>
+					</tr>
+					
+					
+					<tr id="cargoTr-m1" name="cargoTr" class="cargo-m1" data-cls="m1">
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgBlNo-m1" name="crgBlNo" maxlength="20"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgCtnNo-m1" name="crgCtnNo" maxlength="20"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgSealNo-m1" name="crgSealNo" maxlength="14"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgCtnType-m1" name="crgCtnType" maxlength="6"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgCargoName-m1" name="crgCargoName"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgHscode-m1" name="crgHscode" maxlength="10"/></td>
+						<td class="cargo-m1"><input class="text-control integer cargo-m1" id="crgPkgNum-m1" name="crgPkgNum" maxlength="8"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgPkgType-m1" name="crgPkgType"/></td>
+						<td class="cargo-m1"><input class="text-control decimal cargo-m1" id="crgWeight-m1" name="crgWeight" maxlength="13"/></td>
+						<td class="cargo-m1"><input class="text-control decimal cargo-m1" id="crgVolume-m1" name="crgVolume" maxlength="13"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgMark-m1" name="crgMark"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgDgUncode-m1" name="crgDgUncode" maxlength="20"/></td>
+						<td class="cargo-m1"><input class="text-control cargo-m1" id="crgDgClass-m1" name="crgDgClass" maxlength="20"/></td>
+					</tr>
+					<tr id="cargoTr-m2" name="cargoTr" class="cargo-m2" data-cls="m2">
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgBlNo-m2" name="crgBlNo" maxlength="20"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgCtnNo-m2" name="crgCtnNo" maxlength="20"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgSealNo-m2" name="crgSealNo" maxlength="20"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgCtnType-m2" name="crgCtnType" maxlength="6"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgCargoName-m2" name="crgCargoName"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgHscode-m2" name="crgHscode" maxlength="10"/></td>
+						<td class="cargo-m2"><input class="text-control integer cargo-m2" id="crgPkgNum-m2" name="crgPkgNum" maxlength="8"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgPkgType-m2" name="crgPkgType"/></td>
+						<td class="cargo-m2"><input class="text-control decimal cargo-m2" id="crgWeight-m2" name="crgWeight" maxlength="13"/></td>
+						<td class="cargo-m2"><input class="text-control decimal cargo-m2" id="crgVolume-m2" name="crgVolume" maxlength="13"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgMark-m2" name="crgMark"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgDgUncode-m2" name="crgDgUncode" maxlength="20"/></td>
+						<td class="cargo-m2"><input class="text-control cargo-m2" id="crgDgClass-m2" name="crgDgClass" maxlength="20"/></td>
+					</tr>
+					<tr id="cargoTr-m3" name="cargoTr" class="cargo-m3" data-cls="m3">
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgBlNo-m3" name="crgBlNo" maxlength="20"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgCtnNo-m3" name="crgCtnNo" maxlength="20"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgSealNo-m3" name="crgSealNo" maxlength="20"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgCtnType-m3" name="crgCtnType" maxlength="6"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgCargoName-m3" name="crgCargoName"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgHscode-m3" name="crgHscode" maxlength="10"/></td>
+						<td class="cargo-m3"><input class="text-control integer cargo-m3" id="crgPkgNum-m3" name="crgPkgNum" maxlength="8"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgPkgType-m3" name="crgPkgType"/></td>
+						<td class="cargo-m3"><input class="text-control decimal cargo-m3" id="crgWeight-m3" name="crgWeight" maxlength="13"/></td>
+						<td class="cargo-m3"><input class="text-control decimal cargo-m3" id="crgVolume-m3" name="crgVolume" maxlength="13"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgMark-m3" name="crgMark"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgDgUncode-m3" name="crgDgUncode" maxlength="20"/></td>
+						<td class="cargo-m3"><input class="text-control cargo-m3" id="crgDgClass-m3" name="crgDgClass" maxlength="20"/></td>
+					</tr>	
+				</tbody>
+
+			<!-- </table> -->
+			<!-- <table class="table table-bordered"> -->
+				<!-- <tbody> -->
+					<tr>
+						<th style="width:230px;" class="info" colspan="3">品名栏条款补充项 (如LC NO.等)：</th>
+						<td colspan="10"><input class="text-control" name="cargoNameAdd" maxlength="400" value=""/></td>
+					</tr>
+				<!-- </tbody> -->
+			<!-- </table> -->
+			<!-- <table class="table table-bordered">
+				<tbody>
+					<th colspan="6" class="warning" style="text-align:center;">分票小计数据 - (系统自动合成)</th>
+					<tr>
+						<td class="warning">提单号</td>
+						<td class="warning">英文品名</td>
+						<td class="warning">件数</td>
+						<td class="warning">包装单位</td>
+						<td class="warning">毛重(KGS)</td>
+						<td class="warning">体积(CBM)</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<table class="table table-bordered">
+				<tbody id="headBlStcs">
+					<th colspan="7" class="warning" style="text-align:center;">总票统计数据 - (系统自动合成)</th>
+					<tr>
+						<td class="warning">提单号</td>
+						<td class="warning">英文品名</td>
+						<td class="warning">唛头</td>
+						<td class="warning">件数</td>
+						<td class="warning">包装单位</td>
+						<td class="warning">毛重(KGS)</td>
+						<td class="warning">体积(CBM)</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<table class="table table-bordered">
+				<tbody>
+					<th colspan="5" class="warning" style="text-align:center;">箱统计数据 - (系统自动合成)</th>
+					<tr>
+						<td class="warning">箱号</td>
+						<td class="warning">件数</td>
+						<td class="warning">包装单位</td>
+						<td class="warning">毛重(KGS)</td>
+						<td class="warning">体积(CBM)</td>
+					</tr>
+				</tbody>
+			</table> -->
+			<!-- <table class="table table-bordered" id="partyTable"> -->
+				<!-- <tbody> -->
+					<tr><th colspan="13" class="success col-sm-12 col-md-12 col-lg-12 noExl" style="text-align:center;color:#00F;">"发收通" 信息是否需要填写，请咨询指定货代</th></tr>
+					<tr>
+						<td rowspan="6" class="info col-sm-1 col-md-1 col-lg-1" style="vertical-align: middle;">发货人<br/>(Shipper)</td>
+						<td class="info col-sm-1 col-md-1 col-lg-1">代码</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="shppCode" name="shppCode" class="text-control" maxlength="128" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">名称</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="shppName" name="shppName" class="text-control" maxlength="400" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">地址</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="shppAddr" name="shppAddr" class="text-control" maxlength="400" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">国家代码</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="shppCrCode" name="shppCrCode" class="text-control" maxlength="10" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">电话</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="shppPhone" name="shppPhone" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">AEO编码(选填)</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="shppAeoNo" name="shppAeoNo" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					
+					<tr><th colspan="13" class="danger col-sm-12 col-md-12 col-lg-12 noExl" style="text-align:center;color:#00F;">↓↓↓ 若收货人名称为TO ORDER， 则无需填写收货人其他信息。但TO ORDER必须填入 "收货人名称" 栏 ↓↓↓</th></tr>
+					<tr>
+						<td rowspan="8" class="info col-sm-1 col-md-1 col-lg-1" style="vertical-align: middle;">收货人<br/>(Consignee)<br/><br/></td>
+						<td class="info col-sm-1 col-md-1 col-lg-1">代码</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeCode" name="cneeCode" class="text-control" maxlength="128" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">名称</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeName" name="cneeName" class="text-control" maxlength="400" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">地址</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeAddr" name="cneeAddr" class="text-control" maxlength="400" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">国家代码</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeCrCode" name="cneeCrCode" class="text-control" maxlength="10" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">电话</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneePhone" name="cneePhone" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">AEO编码(选填)</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeAeoNo" name="cneeAeoNo" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">具体联系人</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeContact" name="cneeContact" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">联系人电话</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="cneeCntPhone" name="cneeCntPhone" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					<tr><th colspan="13" class="danger col-sm-12 col-md-12 col-lg-12 noExl" style="text-align:left;"><button type="button" class="btn btn-sm btn-primary" style="font-size:14px;" onclick="copyCneeToNtf()">复&nbsp;制 &nbsp;↓↓</button></th></tr>
+					<tr>
+						<td rowspan="6" class="info col-sm-1 col-md-1 col-lg-1" style="vertical-align: middle;">通知人<br/>(Notifier)</td>
+						<td class="info col-sm-1 col-md-1 col-lg-1">代码</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="ntfCode" name="ntfCode" class="text-control" maxlength="128" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">名称</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="ntfName" name="ntfName" class="text-control" maxlength="400" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">地址</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="ntfAddr" name="ntfAddr" class="text-control" maxlength="400" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">国家代码</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="ntfCrCode" name="ntfCrCode" class="text-control" maxlength="10" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">电话</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="ntfPhone" name="ntfPhone" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+					<tr>
+						<td class="info col-sm-1 col-md-1 col-lg-1">AEO编码(选填)</td>
+						<td colspan="11" class="col-sm-10 col-md-10 col-lg-10"><input id="ntfAeoNo" name="ntfAeoNo" class="text-control" maxlength="25" value=""/></td>
+					</tr>
+				<!-- </tbody> -->
+			</table>
+			
+			<div style="text-align:center;padding-bottom:20px;"><button id="submitBtn" type="button" class="btn btn-sm btn-primary" style="font-size:18px;padding:5px 15px;width:150px;color:#fff;" onclick="saveManifest()">保存并导出</button></div>
+		</form>
+		</div>
+	</div>
+	</div>
+	<div class="modal fade" id="batchPasteModal" tabindex="-1" role="dialog" aria-labelledby="batchPasteLabel" aria-hidden="true" data-keyboard="true" data-backdrop="false">
+	    <div class="modal-dialog" style="width:1200px;">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	            	<h5 class="modal-title">请在您的 <label style="font-weight:600;color:#F00;">Excel</label> 中批量复制好信息后，粘贴至下列文本框<label style="color:#F00;">(注：须包含表头一起复制)</label></h5>
+	         	</div>
+		        <div style="padding: 15px 30px 0 30px;">
+				    <form role="form" method="POST">
+					   <div class="form-group row">
+					   	  <textarea id="batchPasteContent" class="form-control" rows="20"></textarea>
+					   </div>
+					   <div class="form-group text-right" style="margin-top:5px;">
+						   <button onclick="cfmBatchPaste()" type="button" class="btn btn-primary">确认</button>&nbsp;&nbsp;
+						   <button data-dismiss="modal" class="btn btn-default">退出</button>
+					   </div>
+					</form>
+	        	</div>
+	        </div>
+	    </div>
+	</div>
+	<script type="text/javascript" src="/wzyy/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="/wzyy/js/jquery.alerts.min.js"></script>
+	<script type="text/javascript" src="/wzyy/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/wzyy/js/jquery.blockUI.min.js"></script>
+	<script type="text/javascript" src="/wzyy/js/jquery.table2excel.js"></script>
+	<!-- <script type="text/javascript" src="/wzyy/js/tableExport.min.js"></script> -->
+	
+	<script type="text/javascript" src="/wzyy/js/common.js"></script>
+	<script type="text/javascript">
+		if ('' == '1') {
+			$('#headBlNo').val('*'+$('#headBlNo').val());
+		}
+		if ('' != '') {
+			$('#vesselName').val('');
+		}
+		if ('' != '') {
+			$('#voyageNo').val('');
+		}
+		if ('' != '') {
+			$('#headBlNo').val('');
+		}
+		if ('' != '') {
+			$('#consNo').val('');
+		}
+		if ('' != '') {
+			$('#destPortName').val('');
+		}
+		var currAutoCrgSeq = 0;
+		var selectedCargoTrId = null;
+		function htmlEscape(text) {
+			var result = text;
+			if (null != text) {
+				result = text.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			}
+			return result;
+		}
+		function changeHeadBl(ele) {
+			$('#headBlStcs').append('<tr><td><input class="text-control" id="headBlStcsBlNo" maxlength="20"/></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>');
+			$('#headBlStcsBlNo').val($(ele).val());
+		}
+		function addCargo() {
+			var tr = '<tr id="cargoTr-a'+currAutoCrgSeq+'" name="cargoTr" class="cargo-a'+currAutoCrgSeq+'" data-cls="a'+currAutoCrgSeq+'">' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgBlNo-a'+currAutoCrgSeq+'" name="crgBlNo" maxlength="20"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgCtnNo-a'+currAutoCrgSeq+'" name="crgCtnNo" maxlength="20"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgSealNo-a'+currAutoCrgSeq+'" name="crgSealNo" maxlength="20"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgCtnType-a'+currAutoCrgSeq+'" name="crgCtnType" maxlength="6"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgCargoName-a'+currAutoCrgSeq+'" name="crgCargoName"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgHscode-a'+currAutoCrgSeq+'" name="crgHscode" maxlength="10"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control integer cargo-a'+currAutoCrgSeq+'" id="crgPkgNum-a'+currAutoCrgSeq+'" name="crgPkgNum" maxlength="8"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgPkgType-a'+currAutoCrgSeq+'" name="crgPkgType"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control decimal cargo-a'+currAutoCrgSeq+'" id="crgWeight-a'+currAutoCrgSeq+'" name="crgWeight" maxlength="13"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control decimal cargo-a'+currAutoCrgSeq+'" id="crgVolume-a'+currAutoCrgSeq+'" name="crgVolume" maxlength="13"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgMark-a'+currAutoCrgSeq+'" name="crgMark"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgDgUncode-a'+currAutoCrgSeq+'" name="crgDgUncode" maxlength="50"/></td>' +
+						'<td class="cargo-a'+currAutoCrgSeq+'"><input class="text-control cargo-a'+currAutoCrgSeq+'" id="crgDgClass-a'+currAutoCrgSeq+'" name="crgDgClass" maxlength="50"/></td>' +
+					  '</tr>';
+			$('#cargoList').append(tr);
+			currAutoCrgSeq++;
+		}
+		function clearCargos() {
+			$('tr[name="cargoTr"]').remove();
+			addCargo();
+			addCargo();
+			addCargo();
+		}
+		function saveManifest() {
+			if (emptyAlert('vesselName', '请输入船名')) {
+				return false;
+			}
+			if (emptyAlert('voyageNo', '请输入航次')) {
+				return false;
+			}
+			if (emptyAlert('destPortName', '请输入目的港')) {
+				return false;
+			}
+			if (emptyAlert('headBlNo', '请输入总单号')) {
+				return false;
+			}
+			var crgBlNoArr = $('input[name="crgBlNo"]');
+			var crgCtnNoArr = $('input[name="crgCtnNo"]');
+			var crgSealNoArr = $('input[name="crgSealNo"]');
+			var crgCtnTypeArr = $('input[name="crgCtnType"]');
+			var crgCargoNameArr = $('input[name="crgCargoName"]');
+			var crgHscodeArr = $('input[name="crgHscode"]');
+			var crgPkgNumArr = $('input[name="crgPkgNum"]');
+			var crgPkgTypeArr = $('input[name="crgPkgType"]');
+			var crgWeightArr = $('input[name="crgWeight"]');
+			var crgVolumeArr = $('input[name="crgVolume"]');
+			if (null==crgBlNoArr || crgBlNoArr.length==0) {
+				jAlert('请输入明细品名及数据', '提醒');
+				return false;
+			}
+			
+			var crgBlNoEmpCount = 0;
+			var crgCtnNoEmpCount = 0;
+			var crgSealNoEmpCount = 0;
+			var crgCtnTypeEmpCount = 0;
+			var crgCargoNameEmpCount = 0;
+			var crgHscodeEmpCount = 0;
+			var crgPkgNumEmpCount = 0;
+			var crgPkgTypeEmpCount = 0;
+			var crgWeightEmpCount = 0;
+			var crgVolumeEmpCount = 0;
+			var crgLineEmpCount = 0;
+			for (var i=0; i<crgBlNoArr.length; i++) {
+				crgBlNoEmpCount = 0;
+				crgCtnNoEmpCount = 0;
+				crgSealNoEmpCount = 0;
+				crgCtnTypeEmpCount = 0;
+				crgCargoNameEmpCount = 0;
+				crgHscodeEmpCount = 0;
+				crgPkgNumEmpCount = 0;
+				crgPkgTypeEmpCount = 0;
+				crgWeightEmpCount = 0;
+				crgVolumeEmpCount = 0;
+				var lineEmpCount = 0;
+				if (/^\s*$/.test($(crgBlNoArr[i]).val())) {
+					crgBlNoEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgCtnNoArr[i]).val())) {
+					crgCtnNoEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgSealNoArr[i]).val())) {
+					crgSealNoEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgCtnTypeArr[i]).val())) {
+					crgCtnTypeEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgCargoNameArr[i]).val())) {
+					crgCargoNameEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgHscodeArr[i]).val())) {
+					crgHscodeEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgPkgNumArr[i]).val())) {
+					crgPkgNumEmpCount ++;
+					lineEmpCount ++;
+				} else if (!/^\s*\d+\s*$/.test($(crgPkgNumArr[i]).val())) {
+					jAlert('件数格式有误 ( 请输入正整数 )', '提醒');
+					return false;
+				}
+				if (/^\s*$/.test($(crgPkgTypeArr[i]).val())) {
+					crgPkgTypeEmpCount ++;
+					lineEmpCount ++;
+				}
+				if (/^\s*$/.test($(crgWeightArr[i]).val())) {
+					crgWeightEmpCount ++;
+					lineEmpCount ++;
+				} else if (!/^\s*\d+(\.\d+)?\s*$/.test($(crgWeightArr[i]).val())) {
+					jAlert('毛重格式有误 ( 请输入数字(允许小数) )', '提醒');
+					return false;
+				}
+				if (/^\s*$/.test($(crgVolumeArr[i]).val())) {
+					crgVolumeEmpCount ++;
+					lineEmpCount ++;
+				} else if (!/^\s*\d+(\.\d+)?\s*$/.test($(crgVolumeArr[i]).val())) {
+					jAlert('体积格式有误 ( 请输入数字(允许小数) )', '提醒');
+					return false;
+				}
+				if (lineEmpCount==10 || lineEmpCount==0) {
+					if (lineEmpCount == 10) {
+						crgLineEmpCount ++;
+					}
+					continue;
+				} else {
+					if (crgBlNoEmpCount > 0) {
+						jAlert('请输入提单号', '提醒');
+						return false;
+					}
+					if (crgCtnNoEmpCount > 0) {
+						jAlert('请输入箱号', '提醒');
+						return false;
+					}
+					if (crgSealNoEmpCount > 0) {
+						jAlert('请输入封号', '提醒');
+						return false;
+					}
+					if (crgCtnTypeEmpCount > 0) {
+						jAlert('请输入箱型', '提醒');
+						return false;
+					}
+					if (crgCargoNameEmpCount > 0) {
+						jAlert('请输入英文品名', '提醒');
+						return false;
+					}
+					if (crgHscodeEmpCount > 0) {
+						jAlert('请输入HSCode', '提醒');
+						return false;
+					}
+					if (crgPkgNumEmpCount > 0) {
+						jAlert('请输入件数', '提醒');
+						return false;
+					}
+					if (crgPkgTypeEmpCount > 0) {
+						jAlert('请输入包装单位', '提醒');
+						return false;
+					}
+					if (crgWeightEmpCount > 0) {
+						jAlert('请输入毛重', '提醒');
+						return false;
+					}
+					if (crgVolumeEmpCount > 0) {
+						jAlert('请输入体积', '提醒');
+						return false;
+					}
+				}
+			}
+			if (crgLineEmpCount == crgBlNoArr.length) {
+				jAlert('请输入明细品名及数据', '提醒');
+				return false;
+			}
+
+			// create table
+			$("input").each(function(){$(this).parent().html($(this).val())});
+
+
+
+
+			$('#submitBtn').html('请稍候...');
+			$('#submitBtn').attr('disabled', false);
+
+			$("#datatable").table2excel({
+                exclude: ".noExl",  
+                name: "Excel Document Name",  
+                filename: "myFileName",  
+                exclude_img: true,  
+                exclude_links: true,  
+                exclude_inputs: true  
+            });
+
+			// location.reload();
+			// $('#datatable').tableExport({ type:'excel',
+
+   //      escape:'false',
+
+   //      fileName: 'UV_statistic_table'});
+
+
+
+			/*$.blockUI({
+                message: '正在提交，请稍候...',
+                css: {
+                	border: 'none',
+                	padding: '15px',
+                	width: '300px',
+                	color: '#f00'
+               	}
+            });
+			$.ajax({
+	    		type: 'post',
+	    		dataType: 'json',
+	    		cache: false,
+	    		data: $('#manifestForm').serialize(),
+	    		url: '',
+	    		error: function(request) {
+	    			jAlert('操作失败，请重试或刷新再试', '错误');
+	    			$('#submitBtn').attr('disabled', false);
+	    			$('#submitBtn').html('提  交');
+	    			$.unblockUI();
+	    		},
+	    		success: function(data, statusCode) {
+	    			if (null!=data && ''+data.result == 'true') {
+	    				jAlert("操作成功", "信息");
+	    				window.open('' + data.headBlId);
+	    				window.location = '' + data.headBlId;
+	    			} else {
+	    				jAlert("操作失败，请重试或刷新再试", "信息");
+	    				$('#submitBtn').attr('disabled', false);
+	    			}
+	    			$.unblockUI();
+	    		}
+	    	});*/
+		}
+		$('body').on('change', 'input', function() {
+			$(this).val($(this).val().replace(/[^\u0000-\u00ff]/g,'').toUpperCase());
+		});
+		$('body').on('input propertychange', 'input', function() {
+			if (/^.*[^\u0000-\u00ff]+.*$/.test($(this).val())) {
+				$(this).val($(this).val().replace(/[^\u0000-\u00ff]/g,'').toUpperCase());
+			}
+		});
+		$('body').on('input propertychange', '.integer', function() {
+			if (/^.*[^\d]+.*$/.test($(this).val())) {
+				$(this).val($(this).val().replace(/[^\d]/g,''));
+			}
+		});
+		$('body').on('input propertychange', '.decimal', function() {
+			if (/^.*[^\d\.]+.*$/.test($(this).val())) {
+				$(this).val($(this).val().replace(/[^\d\.]/g,'').replace(/\.{2,}/g,'.'));
+			}
+		});
+		$('body').on('click', 'tr[name="cargoTr"]', function() {
+			var trList = $('tr[name="cargoTr"]');
+			if (null != trList) {
+				for (var i=0; i<trList.length; i++) {
+					if ($(trList[i]).attr('data-cls') == $(this).attr('data-cls')) {
+						$('.cargo-'+$(this).attr('data-cls')).css('background-color', '#EFEE97');
+						selectedCargoTrId = 'cargoTr-'+$(this).attr('data-cls');
+					} else {
+						$('.cargo-'+$(trList[i]).attr('data-cls')).css('background-color', '');
+					}
+				}
+			}
+		});
+		
+		function copyCneeToNtf() {
+			$('#ntfCode').val($('#cneeCode').val());
+			$('#ntfName').val($('#cneeName').val());
+			$('#ntfAddr').val($('#cneeAddr').val());
+			$('#ntfCrCode').val($('#cneeCrCode').val());
+			$('#ntfPhone').val($('#cneePhone').val());
+			$('#ntfAeoNo').val($('#cneeAeoNo').val());
+		}
+		function copyBl() {
+			
+			var crgBlNoArr = $('input[name="crgBlNo"]');
+			var crgCtnNoArr = $('input[name="crgCtnNo"]');
+			var crgSealNoArr = $('input[name="crgSealNo"]');
+			var crgCtnTypeArr = $('input[name="crgCtnType"]');
+			var crgCargoNameArr = $('input[name="crgCargoName"]');
+			var crgHscodeArr = $('input[name="crgHscode"]');
+			var crgPkgNumArr = $('input[name="crgPkgNum"]');
+			var crgPkgTypeArr = $('input[name="crgPkgType"]');
+			var crgWeightArr = $('input[name="crgWeight"]');
+			var crgVolumeArr = $('input[name="crgVolume"]');
+			var crgMarkArr = $('input[name="crgMark"]');
+			var crgDgUncodeArr = $('input[name="crgDgUncode"]');
+			var crgDgClassArr = $('input[name="crgDgClass"]');
+			
+			var len = crgBlNoArr.length;
+			if (len < 1) {
+				jAlert('无数据可复制，请先输入一票', '提醒');
+				return false;
+			}
+			for (var i=len-1; i>=0; i--) {
+				if (/^\s*$/.test($(crgBlNoArr[i]).val()) && /^\s*$/.test($(crgCtnNoArr[i]).val()) && /^\s*$/.test($(crgSealNoArr[i]).val()) && /^\s*$/.test($(crgCtnTypeArr[i]).val())) {
+					if (/^\s*$/.test($(crgCargoNameArr[i]).val()) && /^\s*$/.test($(crgHscodeArr[i]).val()) && /^\s*$/.test($(crgPkgNumArr[i]).val()) && /^\s*$/.test($(crgPkgTypeArr[i]).val())) {
+						if (/^\s*$/.test($(crgWeightArr[i]).val()) && /^\s*$/.test($(crgVolumeArr[i]).val()) && /^\s*$/.test($(crgMarkArr[i]).val()) && /^\s*$/.test($(crgDgUncodeArr[i]).val())) {
+							if (/^\s*$/.test($(crgDgClassArr[i]).val())) {
+								continue;
+							} else {
+								break;
+							}
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+			var selectedDataCls = $('#'+selectedCargoTrId).attr('data-cls');
+			var regStr = '/\\-'+selectedDataCls+'/g';
+			var tr = $('#'+selectedCargoTrId).prop("outerHTML").replace(eval(regStr), '-a'+currAutoCrgSeq).replace('="'+selectedDataCls+'"', '="a'+currAutoCrgSeq+'"');
+			$($(crgBlNoArr[i]).parent().parent()).after(tr);
+			$('.cargo-a'+currAutoCrgSeq).css('background-color', '');
+			
+			$('#crgBlNo-a'+currAutoCrgSeq).val($('#crgBlNo-'+selectedDataCls).val());
+			$('#crgCtnNo-a'+currAutoCrgSeq).val($('#crgCtnNo-'+selectedDataCls).val());
+			$('#crgSealNo-a'+currAutoCrgSeq).val($('#crgSealNo-'+selectedDataCls).val());
+			$('#crgCtnType-a'+currAutoCrgSeq).val($('#crgCtnType-'+selectedDataCls).val());
+			$('#crgPkgType-a'+currAutoCrgSeq).val($('#crgPkgType-'+selectedDataCls).val());
+			
+			currAutoCrgSeq++;
+		}
+		
+		function deleteCargo() {
+			
+			$('#'+selectedCargoTrId).remove();
+		}
+		$('#batchPasteModal').on('hidden.bs.modal', function () {
+			$('#batchPasteContent').val('');
+		});
+		function toBatchPaste() {
+			$('#batchPasteModal').modal();
+			setTimeout('$("#batchPasteContent").focus();', 300);
+		}
+		function cfmBatchPaste() {
+			var content = $('#batchPasteContent').val();
+			if (null != content) {
+				var lineArr = content.split('\n');
+				if (null != lineArr && lineArr.length > 1) {
+					var fieldHeadArr = lineArr[0].split('	');
+					if (fieldHeadArr != null && fieldHeadArr.length > 0) {
+						clearEmptyCargo();
+						for (var i=1; i<lineArr.length; i++) {
+							var line = lineArr[i];
+							var fieldValueArr = lineArr[i].split('	');
+							addCargo();
+							if (fieldValueArr != null && fieldValueArr.length > 0) {
+								for (var j=0; j<fieldHeadArr.length; j++) {
+									if (fieldHeadArr[j].indexOf('提单号') >= 0) {
+										$('#crgBlNo-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('箱号') >= 0) {
+										$('#crgCtnNo-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('封号') >= 0) {
+										$('#crgSealNo-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('箱型') >= 0) {
+										$('#crgCtnType-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('品名') >= 0 || fieldHeadArr[j].indexOf('货名') >= 0 || fieldHeadArr[j].indexOf('货描') >= 0 || fieldHeadArr[j].indexOf('货物') >= 0 || fieldHeadArr[j].indexOf('描述') >= 0) {
+										$('#crgCargoName-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('海关') >= 0 || fieldHeadArr[j].toUpperCase().indexOf('HS') >= 0) {
+										$('#crgHscode-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('件数') >= 0 || fieldHeadArr[j].indexOf('数量') >= 0) {
+										$('#crgPkgNum-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('包装') >= 0 || fieldHeadArr[j].indexOf('单位') >= 0) {
+										$('#crgPkgType-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('重') >= 0) {
+										$('#crgWeight-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('体积') >= 0 || fieldHeadArr[j].indexOf('尺') >= 0) {
+										$('#crgVolume-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('唛头') >= 0 || fieldHeadArr[j].indexOf('麦头') >= 0) {
+										$('#crgMark-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].toUpperCase().indexOf('UN') >= 0) {
+										$('#crgDgUncode-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									} else if (fieldHeadArr[j].indexOf('类别') >= 0 || fieldHeadArr[j].indexOf('类型') >= 0) {
+										$('#crgDgClass-a'+(currAutoCrgSeq-1)).val(null==fieldValueArr[j]?'':fieldValueArr[j].replace(/^\s*|\s*$/g,''));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			$('#batchPasteModal').modal('hide');
+		}
+		function clearEmptyCargo() {
+			var crgBlNoArr = $('input[name="crgBlNo"]');
+			var crgCtnNoArr = $('input[name="crgCtnNo"]');
+			var crgSealNoArr = $('input[name="crgSealNo"]');
+			var crgCtnTypeArr = $('input[name="crgCtnType"]');
+			var crgCargoNameArr = $('input[name="crgCargoName"]');
+			var crgHscodeArr = $('input[name="crgHscode"]');
+			var crgPkgNumArr = $('input[name="crgPkgNum"]');
+			var crgPkgTypeArr = $('input[name="crgPkgType"]');
+			var crgWeightArr = $('input[name="crgWeight"]');
+			var crgVolumeArr = $('input[name="crgVolume"]');
+			var crgMarkArr = $('input[name="crgMark"]');
+			var crgDgUncodeArr = $('input[name="crgDgUncode"]');
+			var crgDgClassArr = $('input[name="crgDgClass"]');
+			
+			var len = crgBlNoArr.length;
+			if (len > 1) {
+				for (var i=len-1; i>=0; i--) {
+					if (/^\s*$/.test($(crgBlNoArr[i]).val()) && /^\s*$/.test($(crgCtnNoArr[i]).val()) && /^\s*$/.test($(crgSealNoArr[i]).val()) && /^\s*$/.test($(crgCtnTypeArr[i]).val())) {
+						if (/^\s*$/.test($(crgCargoNameArr[i]).val()) && /^\s*$/.test($(crgHscodeArr[i]).val()) && /^\s*$/.test($(crgPkgNumArr[i]).val()) && /^\s*$/.test($(crgPkgTypeArr[i]).val())) {
+							if (/^\s*$/.test($(crgWeightArr[i]).val()) && /^\s*$/.test($(crgVolumeArr[i]).val()) && /^\s*$/.test($(crgMarkArr[i]).val()) && /^\s*$/.test($(crgDgUncodeArr[i]).val())) {
+								if (/^\s*$/.test($(crgDgClassArr[i]).val())) {
+									$(crgBlNoArr[i]).parent().parent().remove();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>
