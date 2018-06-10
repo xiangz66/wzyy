@@ -511,18 +511,19 @@
 			}
 
 			// create table
+			get_filename=$('input[name="headBlNo"]').val();
 			$("input").each(function(){$(this).parent().html($(this).val())});
 
 
 
 
 			$('#submitBtn').html('请稍候...');
-			$('#submitBtn').attr('disabled', false);
+			$('#submitBtn').attr('disabled', true);
 
 			$("#datatable").table2excel({
                 exclude: ".noExl",  
                 name: "Excel Document Name",  
-                filename: "myFileName",  
+                filename: get_filename+".xls",  
                 exclude_img: true,  
                 exclude_links: true,  
                 exclude_inputs: true  
